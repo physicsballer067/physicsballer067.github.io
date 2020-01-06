@@ -14,7 +14,204 @@
     
     <script type="text/processing">
     
-      /*  INSERT CODE HERE */
+      ArrayList<Photon> photons = new ArrayList<Photon>();
+ArrayList<Photon> earthPhotons = new ArrayList<Photon>();
+float a = 50.0;
+float prob = map(a, 0.0, 255.0, 0.0, 1.0);
+
+
+public void setup(){
+  
+  size(800,800);
+  background(0);
+  fill(255, 255, 0);
+  ellipse(0, 400, 400,400);
+  fill(200, 200, 200, a);
+  ellipse(600,400,300,300);
+  fill(97, 51, 24);
+  ellipse(600, 400, 200,200);
+  
+}
+
+void draw(){
+  
+  background(0);
+  
+  fill(255, 255, 0);
+  ellipse(0, 400, 400,400);
+  
+  fill(200, 200, 200, a);
+  ellipse(600,400,300,300);
+   
+   fill(97, 51, 24);
+  ellipse(600, 400, 200,200);
+ 
+  
+  
+  Photon p = new Photon();
+  p.x = 0;
+  p.y = 400; 
+  photons.add(p);
+  
+  for (Photon k: photons){
+    
+    k.update();
+    k.show();
+    
+    
+  }
+  
+  
+ for(int i = 0; i<photons.size(); i++){
+  if(!photons.get(i).istrue()){
+    photons.remove(i);
+    i--;
+  }
+  else if (photons.get(i).hitsearth()){
+    photons.remove(i);
+    Photon m = new Photon();
+    
+    m.x = 600;
+    m.y = 400;
+    m.setvx();
+    m.r = 150;
+    m.g = 0;
+    m.b = 0;
+    earthPhotons.add(m);
+ 
+  
+}
+
+}
+
+for(int i = 0; i<earthPhotons.size(); i++){
+  earthPhotons.get(i).update();
+  earthPhotons.get(i).show();
+  
+  if (earthPhotons.get(i).warming()){
+      if(random(1.0) < prob){
+        earthPhotons.get(i).vx = (-1) * earthPhotons.get(i).vx;
+        earthPhotons.get(i).vy = (-1) * earthPhotons.get(i).vy;
+      }
+    }
+  
+  else if(!earthPhotons.get(i).istrue() || earthPhotons.get(i).hitssun()){
+    earthPhotons.remove(i);
+    i--;
+  }
+  
+    else if (earthPhotons.get(i).hitsearth() && earthPhotons.get(i).hasbounced){
+    earthPhotons.remove(i);
+    Photon m = new Photon();
+    
+    m.x = 600;
+    m.y = 400;
+    m.setvx();
+    m.r = 150;
+    m.g = 0;
+    m.b = 0;
+    earthPhotons.add(m);
+ 
+  
+}
+  
+}
+ 
+  checkKeyPresses();
+}
+
+
+void checkKeyPresses(){
+  if(keyPressed){
+  
+      if(keyCode==UP && a <= 254){
+        a+=1;
+        prob = map(a, 0.0, 255.0, 0.0, 1.0);
+        
+      }
+      else if(keyCode==DOWN && a >=1){
+        a-=1;
+        prob = map(a, 0.0, 255.0, 0.0, 1.0);
+        
+      }
+     
+  }  
+  
+  
+ 
+  
+}
+
+public class Photon{
+
+  float vy = random(-5.0, 5.0);
+  float vx = sqrt(25.0 - (vy * vy));
+
+  
+  float x = 0;
+  float y = 400;
+  float r = 255;
+  float g = 255;
+  float b = 255;
+  boolean hasbounced = false;
+  public void show(){
+    fill(r, g, b);
+    noStroke();
+    ellipse(x,y,10,10);
+  }
+  
+  public void update(){
+    x += vx;
+    y += vy;
+  
+  }
+  public void setvx(){
+   if(random(1.0) > 0.5){
+      vx =  (-1) * sqrt(25.0 - (vy * vy));
+   }
+  }
+  public boolean istrue(){
+    return !(x >= width || y <= 0 || y >= height || x <= 0 );
+  }
+  
+  public boolean hitsearth()
+  {
+    if(sqrt( ((600.0-x) * (600.0 - x)) + ((400.0-y) * (400.0 - y))) < 105.0 ){
+      
+      return true;
+      }
+     else{
+       return false;
+     }
+  }
+  
+  public boolean hitssun()
+  {
+    if(sqrt( ((x) * (x)) + ((400.0-y) * (400.0 - y))) < 205.0 ){
+      
+      return true;
+      }
+     else{
+       return false;
+     }
+  }
+  
+  public boolean warming(){
+  
+    float u = sqrt( ((600.0 - x) * (600.0 - x)) + ((400.0-y) * (400.0 - y)));
+    if (u <= 150.0 && u >= 145.0){
+      hasbounced = true;
+      return true;
+    }
+    else{
+      return false;
+    }
+   
+  
+    
+  }
+  
+}
     </script>
     <canvas id="sketch" style="border: 1px solid black;"></canvas>
     
